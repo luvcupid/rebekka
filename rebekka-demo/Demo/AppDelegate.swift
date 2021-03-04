@@ -34,16 +34,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func testList() {
-        self.session.list("/") {
+        self.session.list(path: "/") {
             (resources, error) -> Void in
             print("List directory with result:\n\(resources), error: \(error)\n\n")
         }
     }
     
     func testUpload() {
-        if let URL = NSBundle.mainBundle().URLForResource("TestUpload", withExtension: "png") {
-            let path = "/upload/\(NSUUID().UUIDString).png"
-            self.session.upload(URL, path: path) {
+        if let URL = Bundle.main.url(forResource: "TestUpload", withExtension: "png") {
+            let path = "/upload/\(NSUUID().uuidString).png"
+            self.session.upload(fileURL: URL, path: path) {
                 (result, error) -> Void in
                 print("Upload file with result:\n\(result), error: \(error)\n\n")
             }
@@ -51,12 +51,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func testDownload() {
-        self.session.download("/1MB.zip") {
+        self.session.download(path: "/1MB.zip") {
             (fileURL, error) -> Void in
             print("Download file with result:\n\(fileURL), error: \(error)\n\n")
             if let fileURL = fileURL {
                 do {
-                    try NSFileManager.defaultManager().removeItemAtURL(fileURL)
+                    try FileManager.default.removeItem(at: fileURL)
                 } catch let error as NSError {
                     print("Error: \(error)")
                 }
@@ -66,8 +66,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func testCreate() {
-        let name = NSUUID().UUIDString
-        self.session.createDirectory("/upload/\(name)") {
+        let name = NSUUID().uuidString
+        self.session.createDirectory(path: "/upload/\(name)") {
             (result, error) -> Void in
             print("Create directory with result:\n\(result), error: \(error)")
         }

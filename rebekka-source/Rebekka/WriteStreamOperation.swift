@@ -8,18 +8,20 @@
 
 import Foundation
 
-/** The base class for write stream operatons. */
-internal class WriteStreamOperation: StreamOperation {
+/// The base class for write stream operatons.
+class WriteStreamOperation: StreamOperation {
     
-    lazy var writeStream: NSOutputStream = {
-        let url = self.fullURL()
-        let cfStream = CFWriteStreamCreateWithFTPURL(nil, self.fullURL())
-        CFWriteStreamSetDispatchQueue(cfStream.takeUnretainedValue(), self.queue)
-        let stream: NSOutputStream = cfStream.takeRetainedValue()
-        return stream
+    lazy var writeStream: OutputStream = {
+        guard let url = fullURL else {
+            return OutputStream()
+        }
+        
+        let cfStream = CFWriteStreamCreateWithFTPURL(nil, url as CFURL)
+        CFWriteStreamSetDispatchQueue(cfStream.takeUnretainedValue(), queue)
+        return cfStream.takeRetainedValue()
     }()
     
-    internal override func start() {
-        self.startOperationWithStream(self.writeStream)
+    override func start() {
+        startOperationWithStream(writeStream)
     }
 }
